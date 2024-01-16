@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function populateTimers() {
+    // Sort timerList based on endTime
+    timerList.sort((a, b) => parseFloat(a.endTime.split('.')[0]) - parseFloat(b.endTime.split('.')[0]));
+
+    console.log(timerList);
+    
     contentDiv_el.innerHTML = '';
     return new Promise(resolve => {
         timerList.forEach((entry, index) => {
@@ -17,7 +22,7 @@ async function populateTimers() {
 
             const itemTitle_el = document.createElement('h3');
             itemTitle_el.classList = 'timer-title';
-            itemTitle_el.textContent = 'Test';
+            itemTitle_el.textContent = entry.title;
 
             const timerText_el = document.createElement('h5');
             timerText_el.classList = 'timer-text';

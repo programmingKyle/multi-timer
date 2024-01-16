@@ -9,10 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function populateTimers() {
-    // Sort timerList based on endTime
     timerList.sort((a, b) => parseFloat(a.endTime.split('.')[0]) - parseFloat(b.endTime.split('.')[0]));
-
-    console.log(timerList);
     
     contentDiv_el.innerHTML = '';
     return new Promise(resolve => {
@@ -34,7 +31,7 @@ async function populateTimers() {
             updateTimerText(entry, timerText_el);
         });
 
-        resolve(); // Resolve the promise when timers are populated
+        resolve();
     });
 }
 
@@ -47,7 +44,6 @@ function updateTimers() {
     
     timerTextElements.forEach((timerText_el, index) => {
         if (!timerText_el.classList.contains('complete')) {
-            //const endTime = timerList[index].endTime;
             const entry = timerList[index];
             updateTimerText(entry, timerText_el);
         }

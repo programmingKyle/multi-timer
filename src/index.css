@@ -92,9 +92,6 @@ h1,h2,h3,h4,h5,h6 {
   color: #fd8d37;
 }
 
-
-
-
 .overlay {
   position: fixed;
   top: 0;
@@ -130,6 +127,11 @@ h1,h2,h3,h4,h5,h6 {
   border-style: none;
   font-size: 14px;
   width: 50px;
+  outline: none;
+}
+
+.timer-input.error {
+  outline: 2px solid red; /* Adjust the width and color as needed */
 }
 
 .timer-title-input {
@@ -140,10 +142,12 @@ h1,h2,h3,h4,h5,h6 {
   font-style: bold;
   padding: 5px;
   border-radius: 5px;
+  outline: none;
 }
 
-
-
+.timer-title-input.error {
+  outline: 2px solid red; /* Adjust the width and color as needed */
+}
 
 ::-webkit-scrollbar {
   width: 6px;

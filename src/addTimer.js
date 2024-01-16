@@ -19,11 +19,47 @@ addTimerClose_el.addEventListener('click', () => {
 });
 
 confirmAddTimerButton_el.addEventListener('click', async () => {
-    const futureDate = calculateFutureDate();
-    timerList = await api.databaseHandler({request: 'Add', title: timerTitleInput_el.value, date: futureDate})
-    await populateTimers();
-    timerTitleInput_el.value = '';
-    addTimerOverlay_el.style.display = 'none';
+    const timerErrorHandling = timeInputErrorHandling();
+    if (timerTitleInput_el.value === ''){
+        timerTitleInput_el.classList.add('error');
+        return;
+    } else if (timerErrorHandling === null) {
+        return;
+    } else {
+        const futureDate = calculateFutureDate();
+        timerList = await api.databaseHandler({request: 'Add', title: timerTitleInput_el.value, date: futureDate})
+        await populateTimers();
+        timerTitleInput_el.value = '';
+        addTimerOverlay_el.style.display = 'none';    
+    }
+});
+
+function timeInputErrorHandling() {
+    const inputs = [timerDays_el, timerHours_el, timerMinutes_el, timerSeconds_el];
+
+    if (inputs.every(input => parseInt(input.value, 10) === 0)) {
+        inputs.forEach(input => {
+            input.classList.add('error');
+            input.addEventListener('click', () => {
+                timerInputReset(inputs);
+            });
+        });
+        return null;
+    }
+}
+
+function timerInputReset(inputs){
+    inputs.forEach(input => {
+        if (input.classList.contains('error')){
+            input.classList.remove('error');
+        }            
+    });
+}
+
+timerTitleInput_el.addEventListener('click', async () => {
+    if (timerTitleInput_el.classList.contains('error')){
+        timerTitleInput_el.classList.remove('error');
+    }
 });
 
 function calculateFutureDate() {

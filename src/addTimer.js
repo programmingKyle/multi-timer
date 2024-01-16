@@ -39,14 +39,17 @@ function calculateFutureDate() {
   
     const currentDate = new Date();
   
-    const futureDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate() + days,
-      currentDate.getHours() + hours,
-      currentDate.getMinutes() + minutes,
-      currentDate.getSeconds() + seconds
-    );
-
+    // Calculate the future date in milliseconds
+    const futureDateInMilliseconds =
+      currentDate.getTime() +
+      days * 24 * 60 * 60 * 1000 +
+      hours * 60 * 60 * 1000 +
+      minutes * 60 * 1000 +
+      seconds * 1000;
+  
+    // Create a new Date object using the calculated milliseconds
+    const futureDate = new Date(futureDateInMilliseconds);
+  
     return futureDate;
-}
+  }
+  

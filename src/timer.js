@@ -51,25 +51,32 @@ function updateTimers() {
 
 async function updateTimerText(entry, timerText_el) {
     if (!isNaN(entry.endTime)) {
-        const currentTime = new Date();
-        const remainingTime = entry.endTime - currentTime;
-
-        if (remainingTime < 0) {
-            timerText_el.textContent = 'Complete';
-            timerText_el.classList.add('complete');
-            await completeListener(entry.id, entry.endTime, timerText_el);
-
-        } else {
-            const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-            timerText_el.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
-        }
+      const currentTime = new Date();
+      const remainingTime = entry.endTime - currentTime;
+  
+      if (remainingTime < 0) {
+        timerText_el.textContent = 'Complete';
+        timerText_el.classList.add('complete');
+        await completeListener(entry.id, entry.endTime, timerText_el);
+      } else {
+        const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+  
+        // Display the remaining time with days
+        timerText_el.textContent = `${days} Days ${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+      }
     } else {
-        timerText_el.textContent = 'Initializing...';
+      timerText_el.textContent = 'Initializing...';
     }
 }
+  
+// Helper function to format time
+function formatTime(time) {
+return time < 10 ? `0${time}` : time;
+}
+  
 
 async function completeListener(id, endTime, element){
     element.addEventListener('click', async (event) => {

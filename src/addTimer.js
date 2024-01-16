@@ -20,11 +20,7 @@ addTimerClose_el.addEventListener('click', () => {
 
 confirmAddTimerButton_el.addEventListener('click', async () => {
     const futureDate = calculateFutureDate();
-    await api.databaseHandler({request: 'Add', title: timerTitleInput_el.value, date: futureDate})
-    timerList.push({
-        title: timerTitleInput_el.value,
-        endTime: futureDate
-    });
+    timerList = await api.databaseHandler({request: 'Add', title: timerTitleInput_el.value, date: futureDate})
     await populateTimers();
     timerTitleInput_el.value = '';
     addTimerOverlay_el.style.display = 'none';
@@ -51,8 +47,6 @@ function calculateFutureDate() {
       currentDate.getMinutes() + minutes,
       currentDate.getSeconds() + seconds
     );
-
-    console.log(futureDate);    
 
     return futureDate;
 }

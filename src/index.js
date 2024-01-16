@@ -84,35 +84,66 @@ async function createDatabase() {
 
 ipcMain.handle('database-handler', async (req, data) => {
   if (!data || !data.request) return;
+  let timers;
   switch (data.request) {
     case 'Add':
-      addTimer(data.title, data.date);
-      return
+      await addTimer(data.title, data.date);
+      timers = await getTimers();
+      break;
     case 'Get':
-      const timers = await getTimers();
-      return timers;
+      timers = await getTimers();
+      break;
+    case 'Complete':
+      await completeTimer(data.timerId)
+      timers = await getTimers();
+      break;
   }
+  return timers;
 });
+
+async function completeTimer(id) {
+  const db = new sqlite3.Database('database.db');
+  const sql = 'UPDATE timers SET status = ? WHERE id = ?';
+  const params = ['complete', id];
+
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function (err) {
+      if (err) {
+        console.error(err.message);
+        reject(err);
+      } else {
+        console.log(`Timer with ID ${id} marked as complete`);
+        resolve();
+      }
+
+      db.close();
+    });
+  });
+}
 
 function addTimer(title, endTime) {
   const db = new sqlite3.Database('database.db');
   const sql = 'INSERT INTO timers (title, dateCreated, endTime, status) VALUES (?, datetime("now"), ?, ?)';
-  
-  db.run(sql, [title, endTime, 'active'], function(err) {
-    if (err) {
-      console.error(err.message);
-    } else {
-      console.log(`Timer added with ID: ${this.lastID}`);
-    }
 
-    db.close();
+  return new Promise((resolve, reject) => {
+    db.run(sql, [title, endTime, 'active'], function(err) {
+      if (err) {
+        console.error(err.message);
+        reject(err);
+      } else {
+        console.log(`Timer added with ID: ${this.lastID}`);
+        resolve(this.lastID);
+      }
+
+      db.close();
+    });
   });
 }
 
 async function getTimers() {
   const db = new sqlite3.Database('database.db');
 
-  const sql = 'SELECT title, endTime FROM timers WHERE status = ?';
+  const sql = 'SELECT id, title, endTime FROM timers WHERE status = ?';
   const status = 'active';
 
   return new Promise((resolve, reject) => {

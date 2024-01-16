@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function populateTimers() {
+    contentDiv_el.innerHTML = '';
     return new Promise(resolve => {
         timerList.forEach((endTime, index) => {
             const item_el = document.createElement('div');
@@ -48,21 +49,25 @@ function updateTimers() {
 }
 
 function updateTimerText(endTime, timerText_el) {
-    // Convert the endTime string to a Date object
-    const endTimeDate = new Date(Number(endTime));
+    if (!isNaN(endTime)) {
+        // Convert the endTime string to a Date object
+        const endTimeDate = new Date(Number(endTime));
 
-    const currentTime = new Date();
-    const remainingTime = endTimeDate - currentTime;
+        const currentTime = new Date();
+        const remainingTime = endTimeDate - currentTime;
 
-    if (remainingTime < 0) {
-        timerText_el.textContent = 'Complete';
-        timerText_el.classList.add('complete');
+        if (remainingTime < 0) {
+            timerText_el.textContent = 'Complete';
+            timerText_el.classList.add('complete');
+        } else {
+            const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+            timerText_el.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+        }
     } else {
-        const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-        timerText_el.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+        timerText_el.textContent = 'Initializing...';
     }
 }
 

@@ -59,10 +59,17 @@ async function updateTimerText(entry, timerText_el) {
         timerText_el.classList.add('complete');
         await completeListener(entry.id, entry.endTime, timerText_el);
       } else {
-        const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+        const currentOffset = currentTime.getTimezoneOffset();
+        const startOfYearOffset = new Date(currentTime.getFullYear(), 0, 1).getTimezoneOffset();
+        const isDST = currentOffset !== startOfYearOffset;
+  
+        // Adjust remaining time if DST is in effect
+        const adjustedRemainingTime = isDST ? remainingTime + 3600000 : remainingTime;
+  
+        const days = Math.floor(adjustedRemainingTime / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((adjustedRemainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((adjustedRemainingTime % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((adjustedRemainingTime % (1000 * 60)) / 1000);
   
         // Display the remaining time with days
         timerText_el.textContent = `${days} Days ${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
@@ -70,7 +77,8 @@ async function updateTimerText(entry, timerText_el) {
     } else {
       timerText_el.textContent = 'Initializing...';
     }
-}
+  }
+  
   
 // Helper function to format time
 function formatTime(time) {

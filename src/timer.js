@@ -1,11 +1,9 @@
 const contentDiv_el = document.getElementById('contentDiv');
-const timerList = [];
+let timerList = [];
 const durationInMilliseconds = 2000;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const endTimeOne = new Date(Date.now() + durationInMilliseconds);
-    const endTimeTwo = new Date(Date.now() + durationInMilliseconds * 2);
-    timerList.push(endTimeOne, endTimeTwo);
+    timerList = await api.databaseHandler({request: 'Get'});
     await populateTimers();
     startTimerUpdates();
 });
@@ -43,15 +41,18 @@ function updateTimers() {
     
     timerTextElements.forEach((timerText_el, index) => {
         if (!timerText_el.classList.contains('complete')) {
-            const endTime = timerList[index];
+            const endTime = timerList[index].endTime;
             updateTimerText(endTime, timerText_el);
         }
     });
 }
 
 function updateTimerText(endTime, timerText_el) {
+    // Convert the endTime string to a Date object
+    const endTimeDate = new Date(Number(endTime));
+
     const currentTime = new Date();
-    const remainingTime = endTime - currentTime;
+    const remainingTime = endTimeDate - currentTime;
 
     if (remainingTime < 0) {
         timerText_el.textContent = 'Complete';
@@ -64,6 +65,7 @@ function updateTimerText(endTime, timerText_el) {
         timerText_el.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
     }
 }
+
 
 function formatTime(time) {
     return time < 10 ? `0${time}` : time;

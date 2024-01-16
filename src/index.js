@@ -1,6 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-
+const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
+const dbFilePath = 'database.db';
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -26,7 +28,10 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', async () => {
+  await createDatabase();
+  createWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -47,3 +52,78 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+async function createDatabase() {
+  // Check if the database file already exists
+  if (fs.existsSync(dbFilePath)) {
+    return;
+  }
+
+  const db = new sqlite3.Database(dbFilePath);
+
+  const createTableSql = `
+    CREATE TABLE IF NOT EXISTS timers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT,
+      dateCreated DATE,
+      endTime TEXT,
+      status TEXT
+    )
+  `;
+
+  db.run(createTableSql, function(err) {
+    if (err) {
+      console.error(err.message);
+    } else {
+      console.log('Database and table created successfully');
+    }
+
+    db.close();
+  });
+}
+
+ipcMain.handle('database-handler', async (req, data) => {
+  if (!data || !data.request) return;
+  switch (data.request) {
+    case 'Add':
+      addTimer(data.title, data.date);
+      return
+    case 'Get':
+      const timers = await getTimers();
+      return timers;
+  }
+});
+
+function addTimer(title, endTime) {
+  const db = new sqlite3.Database('database.db');
+  const sql = 'INSERT INTO timers (title, dateCreated, endTime, status) VALUES (?, datetime("now"), ?, ?)';
+  
+  db.run(sql, [title, endTime, 'active'], function(err) {
+    if (err) {
+      console.error(err.message);
+    } else {
+      console.log(`Timer added with ID: ${this.lastID}`);
+    }
+
+    db.close();
+  });
+}
+
+async function getTimers() {
+  const db = new sqlite3.Database('database.db');
+
+  const sql = 'SELECT title, endTime FROM timers WHERE status = ?';
+  const status = 'active';
+
+  return new Promise((resolve, reject) => {
+    db.all(sql, [status], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+
+      db.close();
+    });
+  });
+}

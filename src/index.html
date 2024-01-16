@@ -4,21 +4,49 @@
     <meta charset="UTF-8" />
     <title>MultiTimer</title>
     <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   </head>
   <body>
+
+    
+    <div id="addTimerOverlay" class="overlay" style="display: none;">
+      <div class="centered-container" style="text-align: center;">
+        <div style="display: grid; grid-template-columns: 1fr auto;">
+          <h2>Add a Timer</h2>
+          <button id="addTimerClose" class="slim-button fa-solid fa-x"></button>
+        </div>
+        <input id="timerTitleInput" class="timer-title-input" type="title" placeholder="Title">
+        <div style="display: grid; grid-template-columns: repeat(4, auto);">
+          <h6>Days</h6>
+          <h6>Hours</h6>
+          <h6>Minutes</h6>
+          <h6>Seconds</h6>
+        </div>
+        <div class="timer-container">
+          <input class="timer-input" type="number" id="timerDays" min="0" value="0">
+          <input class="timer-input" type="number" id="timerHours" min="0" max="23" value="0"/>
+          <input class="timer-input" type="number" id="timerMinutes" min="0" max="59" value="0"/>
+          <input class="timer-input" type="number" id="timerSeconds" min="0" max="59" value="0"/>
+        </div>
+        <button id="confirmAddTimerButton" class="general-button">Add Timer</button>
+      </div>
+    </div>
+    
+
     <div class="base">
       <div class="base-grid">
         <div class="header-grid">
           <h1>MultiTimer</h1>
         </div>
         <div id="contentDiv" class="content-grid">
-          
+
         </div>
         <div class="bottom-bar-grid">
-          <button class="general-button">Add Timer</button>
+          <button id="openAddTimerButton" class="general-button">Add Timer</button>
         </div>  
       </div>  
     </div>
   </body>
   <script src="timer.js"></script>
+  <script src="addTimer.js"></script>
 </html>

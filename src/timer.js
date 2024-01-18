@@ -73,12 +73,16 @@ async function updateTimerText(entry, timerText_el) {
         const seconds = Math.floor((adjustedRemainingTime % (1000 * 60)) / 1000);
   
         // Display the remaining time with days
-        timerText_el.textContent = `${days} Days ${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+        const timerText = days === 0 
+        ? timerText_el.textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`
+        : timerText_el.textContent = `${days} Days ${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
+
+        timerText_el.textContent = timerText;
       }
     } else {
       timerText_el.textContent = 'Initializing...';
     }
-  }
+}
   
   
 // Helper function to format time

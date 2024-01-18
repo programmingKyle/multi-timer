@@ -61,11 +61,11 @@ h1,h2,h3,h4,h5,h6 {
 .slim-button {
   background-color: transparent;
   border-style: none;
-  color: white
+  color: #f59145;
 }
 
 .slim-button:hover{
-  color: rgb(197, 197, 197);
+  filter: brightness(1.25);
 }
 
 .content-item {
@@ -76,7 +76,17 @@ h1,h2,h3,h4,h5,h6 {
   background: linear-gradient(to bottom, rgb(49, 68, 109) 0%, rgb(16, 22, 37) 100%);
   border-radius: 5px;
   padding: 15px;
-  
+}
+
+.content-header-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+
+.confirm-delete-grid {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-gap: 5px;
 }
 
 .timer-title {

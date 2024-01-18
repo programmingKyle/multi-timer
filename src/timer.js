@@ -14,24 +14,77 @@ async function populateTimers() {
     contentDiv_el.innerHTML = '';
     return new Promise(resolve => {
         timerList.forEach((entry, index) => {
-            const item_el = document.createElement('div');
-            item_el.classList = 'content-item';
-
-            const itemTitle_el = document.createElement('h3');
-            itemTitle_el.classList = 'timer-title';
-            itemTitle_el.textContent = entry.title;
-
-            const timerText_el = document.createElement('h5');
-            timerText_el.classList = 'timer-text';
-
-            item_el.append(itemTitle_el);
-            item_el.append(timerText_el);
-            contentDiv_el.append(item_el);
-
-            updateTimerText(entry, timerText_el);
+            timerListItems(entry);
         });
 
         resolve();
+    });
+}
+
+function timerListItems(entry){
+    const item_el = document.createElement('div');
+    item_el.classList = 'content-item';
+
+    // Display Content
+    const headerDiv_el = document.createElement('div');
+    headerDiv_el.classList = 'content-header-grid';
+
+    const itemTitle_el = document.createElement('h3');
+    itemTitle_el.classList = 'timer-title';
+    itemTitle_el.textContent = entry.title;
+
+    const deleteButton_el = document.createElement('button');
+    deleteButton_el.classList = 'fas fa-trash slim-button'
+
+    headerDiv_el.append(itemTitle_el);
+    headerDiv_el.append(deleteButton_el);
+
+    const timerText_el = document.createElement('h5');
+    timerText_el.classList = 'timer-text';
+
+    item_el.append(headerDiv_el);
+    item_el.append(timerText_el);
+
+    contentDiv_el.append(item_el);
+
+    deleteListener(deleteButton_el, entry.id, item_el, headerDiv_el);
+    updateTimerText(entry, timerText_el);
+}
+
+function deleteListener(button, id, itemDiv, headerDiv){
+    button.addEventListener('click', async () => {
+        headerDiv.style.display = 'none';
+
+        const confirmDiv_el = document.createElement('div');
+        confirmDiv_el.classList = 'confirm-delete-grid';
+
+        const confirmHeader_el = document.createElement('h3');
+        confirmHeader_el.textContent = 'Are you sure?';
+        confirmHeader_el.classList = 'timer-title';
+
+        const confirmButton_el = document.createElement('button');
+        confirmButton_el.classList = 'slim-button fas fa-check';
+
+        const backButton_el = document.createElement('button');
+        backButton_el.classList = 'slim-button fas fa-arrow-left';
+
+        confirmDiv_el.append(confirmHeader_el);
+        confirmDiv_el.append(confirmButton_el);
+        confirmDiv_el.append(backButton_el);
+
+        itemDiv.prepend(confirmDiv_el);
+
+        backButton_el.addEventListener('click', () => {
+            confirmDiv_el.style.display = 'none';
+            headerDiv.style.display = 'grid';
+        });
+
+        confirmButton_el.addEventListener('click', async () => {
+            timerList = await api.databaseHandler({request: 'Delete', timerId: id});
+            await populateTimers();
+            confirmDiv_el.style.display = 'none';
+            headerDiv.style.display = 'grid';
+        });
     });
 }
 
@@ -96,7 +149,6 @@ async function completeListener(id, endTime, element){
         event.preventDefault();
         timerList = await api.databaseHandler({request: 'Complete', timerId: id});
         await populateTimers();    
-        startTimerUpdates();
     });
 
     element.addEventListener('mouseenter', () => {

@@ -97,6 +97,10 @@ ipcMain.handle('database-handler', async (req, data) => {
       await completeTimer(data.timerId)
       timers = await getTimers();
       break;
+    case 'Delete':
+      await deleteTimer(data.timerId);
+      timers = await getTimers();
+      break;
   }
   return timers;
 });
@@ -156,5 +160,23 @@ async function getTimers() {
 
       db.close();
     });
+  });
+}
+
+async function deleteTimer(id){
+  const db = new sqlite3.Database('database.db');
+
+  const sql = 'DELETE FROM timers WHERE id = ?';
+  
+  return new Promise((resolve, reject) => {
+    db.run(sql, [id], (err, rows) => {
+      if (err){
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+
+      db.close();
+    })
   });
 }
